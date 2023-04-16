@@ -1,39 +1,37 @@
-const router = require("express").Router()
-const nodemailer = require("nodemailer")
+const router = require("express").Router();
+const nodemailer = require("nodemailer");
 
+router.post("/send", async (req, res) => {
+  const { email, message, name } = req.body;
+  console.log(req.body);
 
-
-router.post('/send', (req, res) => {
-    const { name, email, message } = req.body;
-  
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.office365.com',
-      port: 587,
-      secufre: false,
-      auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASSWORD,
-      },
-    });
-  
-    const mailOptions = {
-      from: email,
-      to: process.env.EMAIL,
-      subject: 'New Message from ' + name,
-      text: message,
-    };
-  
-    transporter.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        console.log(error);
-        res.status(500).send('Something went wrong.');
-      } else {
-        console.log('Email sent: ' + info.response);
-        res.status(200).send('Success!');
-      }
-    });
+  const transporter = nodemailer.createTransport({
+    host: "smtp.mailtrap.io",
+    port: 2525,
+    auth: {
+      user: "c0e5f520d062e6",
+      pass: "f0dec7d212eba6",
+    },
   });
 
-  
+  const mailOptions = {
+    from: "porfolio@fabricio.pt",
+    to: "fabricio.sousa@fabricio.pt",
+    subject: `Portfolio Contact: ${name}`,
+    text: `${message}
+Email: ${email}`,
+    html: `<p>${message}</p> <br/><p>Email: ${email}</p>`,
+  };
 
-  module.exports = router;
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+      res.status(500).send("Something went wrong.");
+    } else {
+      console.log("Email sent: " + info.response);
+      res.status(200).send("Success!");
+    }
+  });
+});
+
+module.exports = router;
